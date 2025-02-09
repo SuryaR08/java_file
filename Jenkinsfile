@@ -1,21 +1,19 @@
 pipeline {
-    agent {
-        label 'docker-agent'
-    }
-    options {
-        skipDefaultCheckout(true)
-    }
+    agent { label 'docker-agent' }
+    
     environment {
-        GIT_EXECUTABLE = '/usr/bin/git'  
+        GIT_EXECUTABLE = '/usr/bin/git'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    gitTool(name: 'git', home: env.GIT_EXECUTABLE)
+                    def gitToolHome = isUnix() ? '/usr/bin/git' : 'C:\\Program Files\\Git\\bin\\git.exe'
+                    withEnv(["GIT_EXECUTABLE=${gitToolHome}"]) {
+                        checkout scm
+                    }
                 }
-                checkout scm
             }
         }
 
@@ -25,15 +23,17 @@ pipeline {
                 sh 'java hello'
             }
         }
+
         stage('Archive Artifacts') {
             steps {
                 archiveArtifacts artifacts: '*.class', fingerprint: true  
             }
         }
     }
+
     post {
         always {
-            cleanWs()  // Clean workspace after execution
+            cleanWs()
         }
     }
 }
