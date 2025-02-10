@@ -3,31 +3,10 @@ pipeline {
 
 
     stages {
-        stage('Checkout') {
-            steps {
-                script {
-                        checkout scm
-                }
+        stage('Hello'){
+            steps{
+                echo 'Hello'
             }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'javac hello.java'
-                sh 'java hello'
-            }
-        }
-
-        stage('Archive Artifacts') {
-            steps {
-                archiveArtifacts artifacts: '*.class', fingerprint: true  
-            }
-        }
-    }
-
-    post {
-        always {
-            cleanWs()
         }
     }
 }
